@@ -2,7 +2,15 @@ import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { LayoutDashboard, PackagePlus, History, Settings, Factory, Menu, X } from "lucide-react";
 import { useState } from "react";
-
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/supabaseClient";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Mint New Product", url: "/mint", icon: PackagePlus },
@@ -11,9 +19,50 @@ const navItems = [
 ];
 
 export function AppSidebar() {
+  const [showSignup, setShowSignup] = useState(false);
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const [empName, setEmpName] = useState("");
+  const [empEmail, setEmpEmail] = useState("");
+  const [empPhone, setEmpPhone] = useState("");
+  const [empLocation, setEmpLocation] = useState("");
+  const [empPassword, setEmpPassword] = useState("");
+  async function createEmployee() {
 
+  if (!empName || !empEmail || !empPhone) {
+    alert("Please fill all required fields");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("employees")
+    .insert([
+{
+  name: empName,
+  email: empEmail,
+  password: empPassword,
+  phone: empPhone,
+  location: empLocation,
+  level: "Factory",
+  can_scan: false
+}
+])
+
+  if(error){
+  console.log("SUPABASE ERROR:", error);
+  alert(error.message);
+} else {
+  alert("Signup successful 🎉");
+
+  setEmpName("");
+  setEmpEmail("");
+  setEmpPassword("");
+  setEmpPhone("");
+  setEmpLocation("");
+
+  setShowSignup(false);
+}
+}
   return (
     <aside
       className={`flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 ${
@@ -61,21 +110,66 @@ export function AppSidebar() {
           );
         })}
       </nav>
-
       {/* Footer */}
-      {!collapsed && (
-        <div className="px-4 py-4 border-t border-sidebar-border">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center text-xs font-medium text-sidebar-accent-foreground">
-              AB
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-medium">Alex Brand</span>
-              <span className="text-[10px] text-sidebar-muted">alex@ethicalbrand.co</span>
-            </div>
-          </div>
-        </div>
-      )}
+{!collapsed && (
+  <div className="px-4 py-4 border-t border-sidebar-border">
+    <Button 
+      className="w-full bg-green-600 hover:bg-green-700"
+      onClick={() => setShowSignup(true)}
+    >
+      Signup 
+    </Button>
+  </div>
+)}
+<Dialog open={showSignup} onOpenChange={setShowSignup}>
+  <DialogContent className="sm:max-w-md">
+    <DialogHeader>
+      <DialogTitle>Signup</DialogTitle>
+    </DialogHeader>
+
+    <div className="space-y-3">
+
+  <Input
+    placeholder="Full Name"
+    value={empName}
+    onChange={(e) => setEmpName(e.target.value)}
+  />
+
+  <Input
+    placeholder="Email"
+    value={empEmail}
+    onChange={(e) => setEmpEmail(e.target.value)}
+  />
+  <Input
+  placeholder="Password"
+  type="password"
+  value={empPassword}
+  onChange={(e) => setEmpPassword(e.target.value)}
+ />
+
+  <Input
+    placeholder="Phone Number"
+    value={empPhone}
+    onChange={(e) => setEmpPhone(e.target.value)}
+  />
+
+  <Input
+    placeholder="Location"
+    value={empLocation}
+    onChange={(e) => setEmpLocation(e.target.value)}
+  />
+  <Button
+  className="w-full bg-green-600 hover:bg-green-700"
+  onClick={createEmployee}
+>
+  Create Account
+</Button>
+  
+
+</div>
+  </DialogContent>
+</Dialog>
+ 
     </aside>
   );
 }
