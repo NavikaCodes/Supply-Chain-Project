@@ -142,7 +142,7 @@ export function AppSidebar() {
     }
 
     if (authData.user) {
-      // Then create employee record
+      // Then create employee record with role column
       const { error } = await supabase
         .from("employees")
         .insert([
@@ -153,6 +153,7 @@ export function AppSidebar() {
             phone: empPhone,
             location: empLocation,
             level: "Factory",
+            role: "Factory", // Adding role column here
             can_scan: false
           }
         ]);
@@ -247,7 +248,7 @@ export function AppSidebar() {
                     {user.employeeData?.name || user.email}
                   </p>
                   <p className="text-[10px] text-sidebar-muted">
-                    {user.employeeData?.level || "Employee"}
+                    {user.employeeData?.role || user.employeeData?.level || "Employee"}
                   </p>
                 </div>
                 {user.employeeData?.can_scan && (

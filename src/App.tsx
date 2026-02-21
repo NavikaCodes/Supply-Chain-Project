@@ -9,7 +9,7 @@ import { AppLayout } from "@/components/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import MintProduct from "./pages/MintProduct";
 import BatchHistory from "./pages/BatchHistory";
-import SettingsPage from "./pages/Settings";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,7 +40,7 @@ const App = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/mint" element={<MintProduct />} />
               <Route path="/batch-history" element={<BatchHistory />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
